@@ -13,9 +13,14 @@ class BranchLocationSeeder extends Seeder
         $branch = Branch::where('name', 'Ask for Patty')->first();
 
         if ($branch) {
-            BranchLocation::updateOrCreate(
+            BranchLocation::firstOrCreate(
                 ['branch_id' => $branch->id, 'name' => 'Gandaria City'],
                 ['is_active' => true, 'sort_order' => 0]
+            );
+
+            BranchLocation::firstOrCreate(
+                ['branch_id' => $branch->id, 'name' => 'Event'],
+                ['is_active' => true, 'sort_order' => 1]
             );
         }
     }
