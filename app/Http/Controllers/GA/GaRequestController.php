@@ -26,9 +26,34 @@ class GaRequestController extends Controller
      * Staff GA hanya lihat pengajuan miliknya sendiri.
      * Head lihat semua pengajuan (untuk kebutuhan monitoring).
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $user = $request->user();
+
+        // Filter diingat per portal (ga./outlet.) di session, supaya saat
+        // user buka detail lalu "Kembali ke daftar" (URL tanpa query) daftar
+        // tetap dalam kondisi filter terakhir. ?reset=1 menghapusnya.
+        $sessionKey = 'filters.'.$this->routeFor('requests.index');
+        $filterKeys = ['status', 'search', 'branch_id', 'page', 'per_page'];
+
+        if ($request->boolean('reset')) {
+            $request->session()->forget($sessionKey);
+
+            return redirect()->route($this->routeFor('requests.index'));
+        }
+
+        if ($request->hasAny($filterKeys)) {
+            $request->session()->put($sessionKey, array_filter(
+                $request->only($filterKeys),
+                fn ($v) => $v !== null && $v !== ''
+            ));
+        } elseif ($saved = $request->session()->get($sessionKey)) {
+            // Pertahankan flash message (mis. "Pengajuan dihapus") melewati
+            // redirect ini.
+            $request->session()->reflash();
+
+            return redirect()->route($this->routeFor('requests.index'), $saved);
+        }
 
         $query = GaRequest::with(['branch', 'branchLocation', 'requestedBy'])
             ->latest();
@@ -39,6 +64,13 @@ class GaRequestController extends Controller
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);
+        }
+
+        // User outlet sudah ter-scope ke cabangnya sendiri — filter cabang
+        // hanya berlaku utk portal GA.
+        $selectedBranch = $user->scopingBranch() ? null : $request->query('branch_id');
+        if ($selectedBranch) {
+            $query->where('branch_id', $selectedBranch);
         }
 
         if ($search = $request->query('search')) {
@@ -55,6 +87,7 @@ class GaRequestController extends Controller
             'requests' => $requests,
             'statusLabels' => GaRequest::statusLabels(),
             'selectedStatus' => $status,
+            'selectedBranch' => $selectedBranch,
             'search' => $search,
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'branchLocations' => BranchLocation::groupedByBranch(),

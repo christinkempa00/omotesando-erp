@@ -29,7 +29,16 @@
             @endif
 
             {{-- Filter --}}
-            <x-filter-bar :action="route('ga.requests.index')" :search-value="$search" search-placeholder="Cari nomor/pemohon/deskripsi..." :reset-url="route('ga.requests.index')">
+            <x-filter-bar :action="route('ga.requests.index')" :search-value="$search" search-placeholder="Cari nomor/pemohon/deskripsi..." :reset-url="route('ga.requests.index', ['reset' => 1])">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Cabang</label>
+                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Semua Cabang</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
             </x-filter-bar>
 
