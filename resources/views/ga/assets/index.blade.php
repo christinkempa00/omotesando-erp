@@ -25,7 +25,7 @@
             {{-- Filter --}}
             <div class="flex items-center gap-2">
                 <div class="flex-1 min-w-0">
-                    <x-filter-bar :action="route('ga.assets.index')" :search-value="$search" search-placeholder="Nama/kode/serial number..." :reset-url="route('ga.assets.index')">
+                    <x-filter-bar :action="route('ga.assets.index')" :search-value="$search" search-placeholder="Nama/kode/serial number..." :reset-url="route('ga.assets.index', ['reset' => 1])">
                         <div>
                             <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
                             <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">

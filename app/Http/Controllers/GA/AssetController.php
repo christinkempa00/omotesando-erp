@@ -19,8 +19,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AssetController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        if ($redirect = $this->rememberFilters($request, $this->routeFor('assets.index'), ['status', 'search', 'branch_id', 'date_from', 'date_to', 'page', 'per_page'])) {
+            return $redirect;
+        }
+
         $query = $this->filteredQuery($request);
 
         $assets = $query->latest()->paginate(15)->withQueryString();

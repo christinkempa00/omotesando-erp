@@ -30,29 +30,8 @@ class GaRequestController extends Controller
     {
         $user = $request->user();
 
-        // Filter diingat per portal (ga./outlet.) di session, supaya saat
-        // user buka detail lalu "Kembali ke daftar" (URL tanpa query) daftar
-        // tetap dalam kondisi filter terakhir. ?reset=1 menghapusnya.
-        $sessionKey = 'filters.'.$this->routeFor('requests.index');
-        $filterKeys = ['status', 'search', 'branch_id', 'page', 'per_page'];
-
-        if ($request->boolean('reset')) {
-            $request->session()->forget($sessionKey);
-
-            return redirect()->route($this->routeFor('requests.index'));
-        }
-
-        if ($request->hasAny($filterKeys)) {
-            $request->session()->put($sessionKey, array_filter(
-                $request->only($filterKeys),
-                fn ($v) => $v !== null && $v !== ''
-            ));
-        } elseif ($saved = $request->session()->get($sessionKey)) {
-            // Pertahankan flash message (mis. "Pengajuan dihapus") melewati
-            // redirect ini.
-            $request->session()->reflash();
-
-            return redirect()->route($this->routeFor('requests.index'), $saved);
+        if ($redirect = $this->rememberFilters($request, $this->routeFor('requests.index'), ['status', 'search', 'branch_id', 'page', 'per_page'])) {
+            return $redirect;
         }
 
         $query = GaRequest::with(['branch', 'branchLocation', 'requestedBy'])

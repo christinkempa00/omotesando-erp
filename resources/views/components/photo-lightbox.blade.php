@@ -50,14 +50,19 @@
      @keydown.arrow-left.window="open && prev()"
      @keydown.arrow-right.window="open && next()">
 
-    <div class="{{ $gridClass }}">
-        @foreach ($urls as $i => $url)
-            <button type="button" @click="show({{ $i }})" class="block focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md">
-                <img src="{{ $url }}" alt="Lampiran {{ $i + 1 }}" loading="lazy"
-                     class="w-full aspect-square rounded-md object-cover border border-gray-200 hover:opacity-90 cursor-zoom-in">
-            </button>
-        @endforeach
-    </div>
+    @if ($slot->isNotEmpty())
+        {{-- Thumbnail custom: elemen di slot panggil show(index) sendiri. --}}
+        {{ $slot }}
+    @else
+        <div class="{{ $gridClass }}">
+            @foreach ($urls as $i => $url)
+                <button type="button" @click="show({{ $i }})" class="block focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md">
+                    <img src="{{ $url }}" alt="Lampiran {{ $i + 1 }}" loading="lazy"
+                         class="w-full aspect-square rounded-md object-cover border border-gray-200 hover:opacity-90 cursor-zoom-in">
+                </button>
+            @endforeach
+        </div>
+    @endif
 
     <template x-teleport="body">
         <div x-show="open" x-cloak x-transition.opacity

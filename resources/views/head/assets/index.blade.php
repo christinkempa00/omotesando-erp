@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             {{-- Filter --}}
-            <x-filter-bar :action="route('head.assets.index')" :search-value="$search" search-placeholder="Cari nama/kode/serial number..." :reset-url="route('head.assets.index')">
+            <x-filter-bar :action="route('head.assets.index')" :search-value="$search" search-placeholder="Cari nama/kode/serial number..." :reset-url="route('head.assets.index', ['reset' => 1])">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
                     <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">

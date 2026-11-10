@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Head;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\GA\Asset;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -14,8 +15,12 @@ use Illuminate\View\View;
  */
 class HeadAssetController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        if ($redirect = $this->rememberFilters($request, 'head.assets.index', ['status', 'search', 'branch_id', 'page', 'per_page'])) {
+            return $redirect;
+        }
+
         $query = Asset::with(['branch'])->latest();
 
         if ($status = $request->query('status')) {
