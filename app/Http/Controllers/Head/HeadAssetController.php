@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Head;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\BranchLocation;
 use App\Models\GA\Asset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class HeadAssetController extends Controller
 {
     public function index(Request $request): View|RedirectResponse
     {
-        if ($redirect = $this->rememberFilters($request, 'head.assets.index', ['status', 'search', 'branch_id', 'page', 'per_page'])) {
+        if ($redirect = $this->rememberFilters($request, 'head.assets.index', ['status', 'search', 'branch_id', 'branch_location_id', 'page', 'per_page'])) {
             return $redirect;
         }
 
@@ -39,6 +40,10 @@ class HeadAssetController extends Controller
             $query->where('branch_id', $branchId);
         }
 
+        if ($branchLocationId = $request->query('branch_location_id')) {
+            $query->where('branch_location_id', $branchLocationId);
+        }
+
         $assets = $query->paginate(15)->withQueryString();
 
         return view('head.assets.index', [
@@ -47,6 +52,8 @@ class HeadAssetController extends Controller
             'branches' => Branch::orderedOutlets(),
             'selectedStatus' => $status,
             'selectedBranch' => $branchId,
+            'branchLocations' => BranchLocation::groupedByBranch(),
+            'selectedBranchLocation' => $branchLocationId,
             'search' => $search,
         ]);
     }

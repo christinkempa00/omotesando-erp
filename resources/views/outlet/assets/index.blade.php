@@ -9,6 +9,7 @@
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             <x-filter-bar :action="route('outlet.assets.index')" :search-value="$search" search-placeholder="Cari nama/kode/serial number..." :reset-url="route('outlet.assets.index', ['reset' => 1])">
+                <x-branch-filter :branch-locations="$branchLocations" :fixed-branch-id="$outletBranchId" :selected-branch-location="$selectedBranchLocation" />
                 <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
             </x-filter-bar>
 

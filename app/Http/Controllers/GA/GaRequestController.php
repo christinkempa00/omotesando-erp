@@ -30,7 +30,7 @@ class GaRequestController extends Controller
     {
         $user = $request->user();
 
-        if ($redirect = $this->rememberFilters($request, $this->routeFor('requests.index'), ['status', 'search', 'branch_id', 'page', 'per_page'])) {
+        if ($redirect = $this->rememberFilters($request, $this->routeFor('requests.index'), ['status', 'search', 'branch_id', 'branch_location_id', 'page', 'per_page'])) {
             return $redirect;
         }
 
@@ -52,6 +52,10 @@ class GaRequestController extends Controller
             $query->where('branch_id', $selectedBranch);
         }
 
+        if ($selectedBranchLocation = $request->query('branch_location_id')) {
+            $query->where('branch_location_id', $selectedBranchLocation);
+        }
+
         if ($search = $request->query('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('request_number', 'like', "%{$search}%")
@@ -67,6 +71,8 @@ class GaRequestController extends Controller
             'statusLabels' => GaRequest::statusLabels(),
             'selectedStatus' => $status,
             'selectedBranch' => $selectedBranch,
+            'selectedBranchLocation' => $selectedBranchLocation,
+            'outletBranchId' => $user->scopingBranch()?->id,
             'search' => $search,
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'branchLocations' => BranchLocation::groupedByBranch(),

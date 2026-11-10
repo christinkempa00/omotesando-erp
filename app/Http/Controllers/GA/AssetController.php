@@ -21,7 +21,7 @@ class AssetController extends Controller
 {
     public function index(Request $request): View|RedirectResponse
     {
-        if ($redirect = $this->rememberFilters($request, $this->routeFor('assets.index'), ['status', 'search', 'branch_id', 'date_from', 'date_to', 'page', 'per_page'])) {
+        if ($redirect = $this->rememberFilters($request, $this->routeFor('assets.index'), ['status', 'search', 'branch_id', 'branch_location_id', 'date_from', 'date_to', 'page', 'per_page'])) {
             return $redirect;
         }
 
@@ -35,6 +35,9 @@ class AssetController extends Controller
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'selectedStatus' => $request->query('status'),
             'selectedBranch' => $request->query('branch_id'),
+            'branchLocations' => BranchLocation::groupedByBranch(),
+            'selectedBranchLocation' => $request->query('branch_location_id'),
+            'outletBranchId' => $request->user()->scopingBranch()?->id,
             'search' => $request->query('search'),
             'dateFrom' => $request->query('date_from'),
             'dateTo' => $request->query('date_to'),
@@ -233,6 +236,10 @@ class AssetController extends Controller
 
         if ($branchId = $request->query('branch_id')) {
             $query->where('branch_id', $branchId);
+        }
+
+        if ($branchLocationId = $request->query('branch_location_id')) {
+            $query->where('branch_location_id', $branchLocationId);
         }
 
         if ($dateFrom = $request->query('date_from')) {
