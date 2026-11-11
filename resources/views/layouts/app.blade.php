@@ -39,8 +39,12 @@
             @include($sidebarPartial)
 
             <div class="flex-1 flex flex-col min-w-0">
+                {{-- Header "freeze": topbar mobile + banner pemeliharaan + judul
+                     halaman dibungkus satu blok sticky, supaya tetap terlihat
+                     walau konten di-scroll. --}}
+                <div class="sticky top-0 z-20">
                 <!-- Topbar -->
-                <div class="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gold-500/20 lg:hidden">
+                <div class="bg-white/80 backdrop-blur-md border-b border-gold-500/20 lg:hidden">
                     <div class="flex items-center px-4 py-3">
                         <button @click="sidebarOpen = true" class="text-ink-muted hover:text-ink">
                             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -72,6 +76,7 @@
                         </div>
                     </header>
                 @endisset
+                </div>
 
                 <!-- Page Content -->
                 <main class="flex-1">

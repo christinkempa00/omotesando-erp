@@ -3,6 +3,8 @@
     Telegram (bukan alur GAR berjenjang). Alpine `quickOpen` datang dari
     x-data induk di index.blade.php.
 --}}
+{{-- Di-teleport ke <body> supaya tidak terkurung di header sticky (z-20). --}}
+<template x-teleport="body">
 <div x-show="quickOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display: none;" @keydown.escape.window="quickOpen = false">
     <div class="fixed inset-0 bg-gray-900/60" @click="quickOpen = false"></div>
 
@@ -177,3 +179,4 @@
         </form>
     </div>
 </div>
+</template>
