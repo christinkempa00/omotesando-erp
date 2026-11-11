@@ -206,7 +206,6 @@
                                 <th class="px-4 py-3 text-center"></th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tipe Seragam &amp; Warna</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Outlet</th>
-                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Cabang</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Kondisi</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Ukuran</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Total</th>
@@ -231,7 +230,6 @@
                                         <div class="text-xs text-ink-muted">{{ $group->color ?: '-' }}</div>
                                     </td>
                                     <td class="px-4 py-3 text-sm text-ink">{{ $group->branch->name }}</td>
-                                    <td class="px-4 py-3 text-sm text-ink">{{ $group->branchLocation?->name ?? '-' }}</td>
                                     <td class="px-4 py-3">
                                         @if ($group->is_low)
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full border border-status-rejected-fg/30 bg-status-rejected-bg text-status-rejected-fg">Perlu Ganti</span>
@@ -239,10 +237,18 @@
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full border border-status-approved-fg/30 bg-status-approved-bg text-status-approved-fg">Bagus</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-ink-muted">
-                                        @foreach ($group->items as $item)
-                                            <span class="whitespace-nowrap {{ $item->isLowStock() ? 'text-orange-600 font-medium' : '' }}">{{ $item->size ?: '-' }}:{{ $item->available_stock }}</span>@if (!$loop->last)<span> </span>@endif
-                                        @endforeach
+                                    <td class="px-4 py-3">
+                                        {{-- Tiap ukuran = 1 "chip": [Ukuran | Stok]; oranye = stok menipis --}}
+                                        <div class="flex flex-wrap gap-1.5 max-w-xs">
+                                            @foreach ($group->items as $item)
+                                                @php($low = $item->isLowStock())
+                                                <span class="inline-flex items-stretch rounded-md border overflow-hidden text-xs {{ $low ? 'border-orange-300' : 'border-hairline' }}"
+                                                      title="Ukuran {{ $item->size ?: '-' }}: {{ $item->available_stock }} tersedia{{ $low ? ' (stok menipis)' : '' }}">
+                                                    <span class="px-1.5 py-0.5 font-medium {{ $low ? 'bg-orange-50 text-orange-700' : 'bg-surface text-ink-muted' }}">{{ $item->size ?: '-' }}</span>
+                                                    <span class="px-1.5 py-0.5 font-mono font-semibold border-l {{ $low ? 'border-orange-300 text-orange-600' : 'border-hairline text-ink' }}">{{ $item->available_stock }}</span>
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     </td>
                                     <td class="px-4 py-3 text-sm font-mono text-ink">{{ $group->total_available }}</td>
                                     <td class="px-4 py-3 text-sm font-mono {{ $group->total_unusable > 0 ? 'text-red-600' : 'text-ink' }}">{{ $group->total_unusable }}</td>
@@ -286,7 +292,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada varian seragam.</td>
+                                    <td colspan="8" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada varian seragam.</td>
                                 </tr>
                             @endforelse
                         </tbody>
