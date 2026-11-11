@@ -69,9 +69,10 @@
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">ID Aset</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Nama Aset &amp; Merk</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Outlet &amp; Lokasi</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Cabang</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tanggal Beli</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Penanggung Jawab</th>
+                            <th class="px-3 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase leading-tight">Penanggung Jawab</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
                         </tr>
                     </thead>
@@ -94,16 +95,17 @@
                                     <div class="text-xs text-ink-muted">{{ $asset->brand ?: '-' }}</div>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    <div class="text-ink">{{ $asset->outletLabel() }}</div>
+                                    <div class="text-ink">{{ $asset->branch?->name ?? '-' }}</div>
                                     <div class="text-xs text-ink-muted">{{ $asset->location ?: '-' }}</div>
                                 </td>
+                                <td class="px-4 py-3 text-sm text-ink">{{ $asset->branchLocation?->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm text-ink-muted">{{ optional($asset->purchase_date)->format('d/m/y') ?: '-' }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ \App\Models\GA\Asset::statusBadgeColor($asset->status) }}">
                                         {{ $statusLabels[$asset->status] }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $asset->custodian_name ?: '-' }}</td>
+                                <td class="px-3 py-3 text-xs text-ink-muted"><div class="w-24 truncate" title="{{ $asset->custodian_name }}">{{ $asset->custodian_name ?: '-' }}</div></td>
                                 <td class="px-4 py-3 text-right text-sm" onclick="event.stopPropagation()">
                                     <div class="flex items-center justify-end gap-3">
                                         <a href="{{ route('ga.assets.qr', $asset) }}" title="QR" class="text-ink-muted hover:text-ink">
@@ -135,7 +137,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada aset.</td>
+                                <td colspan="10" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada aset.</td>
                             </tr>
                         @endforelse
                     </tbody>
