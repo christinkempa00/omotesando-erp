@@ -71,7 +71,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Outlet &amp; Lokasi</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabang</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -102,8 +102,8 @@
                                         {{ $statusLabels[$asset->status] }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-right text-sm" onclick="event.stopPropagation()">
-                                    <div class="flex items-center justify-end gap-3">
+                                <td class="px-4 py-3 text-center text-sm" onclick="event.stopPropagation()">
+                                    <div class="flex items-center justify-center gap-3">
                                         <a href="{{ route('ga.assets.qr', $asset) }}" title="QR" class="text-gray-500 hover:text-gray-800">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                                 <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
