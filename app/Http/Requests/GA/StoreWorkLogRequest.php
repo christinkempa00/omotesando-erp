@@ -19,7 +19,9 @@ class StoreWorkLogRequest extends FormRequest
         return [
             'work_date' => ['required', 'date'],
             'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            // Boleh lebih kecil dari start_time = selesai hari berikutnya (shift
+            // malam, mis. 22:00–02:00, lihat WorkLog::durationMinutes()).
+            'end_time' => ['required', 'date_format:H:i', 'different:start_time'],
             'category' => ['required', 'in:'.implode(',', array_keys(WorkLog::categoryLabels()))],
             'branch_id' => [
                 'required',
@@ -48,7 +50,7 @@ class StoreWorkLogRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'end_time.after' => 'Waktu berakhir harus setelah waktu mulai.',
+            'end_time.different' => 'Waktu berakhir tidak boleh sama dengan waktu mulai.',
             'technician_in_charge.in' => 'Pilih teknisi in charge dari daftar yang tersedia.',
         ];
     }

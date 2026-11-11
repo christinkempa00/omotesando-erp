@@ -119,7 +119,7 @@
                                 <td class="px-4 py-3 text-sm">
                                     <div class="text-ink">{{ optional($workLog->work_date)->format('d/m/y') }}</div>
                                     <div class="text-xs text-ink-muted">
-                                        {{ substr($workLog->start_time, 0, 5) }}@if ($workLog->end_time)&ndash;{{ substr($workLog->end_time, 0, 5) }}@endif
+                                        {{ substr($workLog->start_time, 0, 5) }}@if ($workLog->end_time)&ndash;{{ substr($workLog->end_time, 0, 5) }}@if ($workLog->crossesMidnight())<sup title="Selesai hari berikutnya">+1</sup>@endif @endif
                                     </div>
                                     @if ($workLog->durationLabel())
                                         <div class="text-xs text-ink-muted">{{ $workLog->durationLabel() }}</div>

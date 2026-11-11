@@ -60,7 +60,7 @@
                     <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm flex-1">
                         <div><dt class="text-ink-muted">Tanggal Pengerjaan</dt><dd class="font-medium text-ink">{{ optional($workLog->work_date)->format('d/m/Y') }}</dd></div>
                         <div><dt class="text-ink-muted">Waktu Mulai</dt><dd class="font-medium text-ink">{{ substr($workLog->start_time, 0, 5) }}</dd></div>
-                        <div><dt class="text-ink-muted">Waktu Berakhir</dt><dd class="font-medium text-ink">{{ $workLog->end_time ? substr($workLog->end_time, 0, 5) : '-' }}</dd></div>
+                        <div><dt class="text-ink-muted">Waktu Berakhir</dt><dd class="font-medium text-ink">{{ $workLog->end_time ? substr($workLog->end_time, 0, 5) : '-' }}@if ($workLog->crossesMidnight()) <span class="text-xs text-ink-muted font-normal">(hari berikutnya)</span>@endif</dd></div>
                         <div><dt class="text-ink-muted">Durasi</dt><dd class="font-medium text-ink">{{ $workLog->durationLabel() ?? '-' }}</dd></div>
                         <div><dt class="text-ink-muted">Kategori Pengerjaan</dt><dd class="font-medium text-ink">{{ $categoryLabels[$workLog->category] ?? $workLog->category }}</dd></div>
                         <div><dt class="text-ink-muted">Outlet</dt><dd class="font-medium text-ink">{{ $workLog->outletLabel() }}</dd></div>

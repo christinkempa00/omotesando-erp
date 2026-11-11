@@ -55,9 +55,11 @@ class WorkLog extends Model
         ];
     }
 
-    public const TECHNICIAN_BANGKAT = 'Bangkat';
+    // Ejaan baku mengikuti jadwal teknisi resmi (Google Sheets "Jadwal
+    // Teknisi", 11/11/2026): Bankat, Toni, Widy.
+    public const TECHNICIAN_BANKAT = 'Bankat';
     public const TECHNICIAN_TONI = 'Toni';
-    public const TECHNICIAN_WIDI = 'Widi';
+    public const TECHNICIAN_WIDY = 'Widy';
 
     /**
      * Daftar tetap — dipakai sbg pilihan dropdown Teknisi in Charge & sbg
@@ -66,9 +68,9 @@ class WorkLog extends Model
     public static function technicianOptions(): array
     {
         return [
-            self::TECHNICIAN_BANGKAT,
+            self::TECHNICIAN_BANKAT,
             self::TECHNICIAN_TONI,
-            self::TECHNICIAN_WIDI,
+            self::TECHNICIAN_WIDY,
         ];
     }
 
@@ -99,6 +101,8 @@ class WorkLog extends Model
 
     /**
      * Turunan dari start_time/end_time — tidak disimpan sbg kolom terpisah.
+     * Shift malam: kalau jam selesai <= jam mulai (mis. 22:00–02:00),
+     * jam selesai dianggap hari berikutnya.
      */
     public function durationMinutes(): ?int
     {
@@ -106,7 +110,23 @@ class WorkLog extends Model
             return null;
         }
 
-        return Carbon::parse($this->start_time)->diffInMinutes(Carbon::parse($this->end_time), true);
+        $start = Carbon::parse($this->start_time);
+        $end = Carbon::parse($this->end_time);
+
+        if ($end->lessThanOrEqualTo($start)) {
+            $end->addDay();
+        }
+
+        return (int) $start->diffInMinutes($end);
+    }
+
+    /**
+     * True kalau pekerjaan melewati tengah malam (jam selesai = hari berikutnya).
+     */
+    public function crossesMidnight(): bool
+    {
+        return $this->start_time && $this->end_time
+            && Carbon::parse($this->end_time)->lessThanOrEqualTo(Carbon::parse($this->start_time));
     }
 
     public function durationLabel(): ?string
