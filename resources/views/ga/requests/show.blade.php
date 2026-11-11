@@ -131,13 +131,7 @@
             @if ($gaRequest->attachments->isNotEmpty())
                 <div class="card-flat p-6">
                     <h3 class="font-medium text-ink mb-3">Lampiran Foto</h3>
-                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                        @foreach ($gaRequest->attachments as $attachment)
-                            <a href="{{ Storage::url($attachment->photo_path) }}" target="_blank">
-                                <img src="{{ Storage::url($attachment->photo_path) }}" class="w-full aspect-square rounded-md object-cover border border-hairline">
-                            </a>
-                        @endforeach
-                    </div>
+                    <x-photo-lightbox :urls="$gaRequest->attachments->map(fn ($a) => Storage::url($a->photo_path))" />
                 </div>
             @endif
         </div>

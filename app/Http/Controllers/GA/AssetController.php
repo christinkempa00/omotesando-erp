@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GA;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreAssetRequest;
 use App\Models\Branch;
+use App\Models\BranchLocation;
 use App\Models\GA\Asset;
 use App\Models\UserPagePermission;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -18,8 +19,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AssetController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        if ($redirect = $this->rememberFilters($request, $this->routeFor('assets.index'), ['status', 'search', 'branch_id', 'branch_location_id', 'date_from', 'date_to', 'page', 'per_page'])) {
+            return $redirect;
+        }
+
         $query = $this->filteredQuery($request);
 
         $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
@@ -33,6 +38,9 @@ class AssetController extends Controller
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'selectedStatus' => $request->query('status'),
             'selectedBranch' => $request->query('branch_id'),
+            'branchLocations' => BranchLocation::groupedByBranch(),
+            'selectedBranchLocation' => $request->query('branch_location_id'),
+            'outletBranchId' => $request->user()->scopingBranch()?->id,
             'search' => $request->query('search'),
             'dateFrom' => $request->query('date_from'),
             'dateTo' => $request->query('date_to'),
@@ -229,6 +237,10 @@ class AssetController extends Controller
 
         if ($branchId = $request->query('branch_id')) {
             $query->where('branch_id', $branchId);
+        }
+
+        if ($branchLocationId = $request->query('branch_location_id')) {
+            $query->where('branch_location_id', $branchLocationId);
         }
 
         if ($dateFrom = $request->query('date_from')) {

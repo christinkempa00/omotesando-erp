@@ -29,7 +29,8 @@
             @endif
 
             {{-- Filter --}}
-            <x-filter-bar :action="route('ga.requests.index')" :search-value="$search" search-placeholder="Cari nomor/pemohon/deskripsi..." :reset-url="route('ga.requests.index')">
+            <x-filter-bar :action="route('ga.requests.index')" :search-value="$search" search-placeholder="Cari nomor/pemohon/deskripsi..." :reset-url="route('ga.requests.index', ['reset' => 1])">
+                <x-branch-filter :branches="$branches" :branch-locations="$branchLocations" :selected-branch="$selectedBranch" :selected-branch-location="$selectedBranchLocation" />
                 <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
             </x-filter-bar>
 

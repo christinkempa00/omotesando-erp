@@ -25,16 +25,8 @@
             {{-- Filter --}}
             <div class="flex items-center gap-2">
                 <div class="flex-1 min-w-0">
-                    <x-filter-bar :action="route('ga.assets.index')" :search-value="$search" search-placeholder="Nama/kode/serial number..." :reset-url="route('ga.assets.index')">
-                        <div>
-                            <label class="block text-xs font-medium text-ink-muted mb-1">Outlet</label>
-                            <select name="branch_id" class="w-full rounded-md border-hairline text-sm shadow-sm focus:border-action focus:ring-action">
-                                <option value="">Semua Outlet</option>
-                                @foreach ($branches as $branch)
-                                    <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <x-filter-bar :action="route('ga.assets.index')" :search-value="$search" search-placeholder="Nama/kode/serial number..." :reset-url="route('ga.assets.index', ['reset' => 1])">
+                        <x-branch-filter :branches="$branches" :branch-locations="$branchLocations" :selected-branch="$selectedBranch" :selected-branch-location="$selectedBranchLocation" />
 
                         <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
 

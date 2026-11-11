@@ -26,9 +26,13 @@ class GaRequestController extends Controller
      * Staff GA hanya lihat pengajuan miliknya sendiri.
      * Head lihat semua pengajuan (untuk kebutuhan monitoring).
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $user = $request->user();
+
+        if ($redirect = $this->rememberFilters($request, $this->routeFor('requests.index'), ['status', 'search', 'branch_id', 'branch_location_id', 'page', 'per_page'])) {
+            return $redirect;
+        }
 
         $query = GaRequest::with(['branch', 'branchLocation', 'requestedBy'])
             ->latest();
@@ -39,6 +43,17 @@ class GaRequestController extends Controller
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);
+        }
+
+        // User outlet sudah ter-scope ke cabangnya sendiri — filter cabang
+        // hanya berlaku utk portal GA.
+        $selectedBranch = $user->scopingBranch() ? null : $request->query('branch_id');
+        if ($selectedBranch) {
+            $query->where('branch_id', $selectedBranch);
+        }
+
+        if ($selectedBranchLocation = $request->query('branch_location_id')) {
+            $query->where('branch_location_id', $selectedBranchLocation);
         }
 
         if ($search = $request->query('search')) {
@@ -58,6 +73,9 @@ class GaRequestController extends Controller
             'requests' => $requests,
             'statusLabels' => GaRequest::statusLabels(),
             'selectedStatus' => $status,
+            'selectedBranch' => $selectedBranch,
+            'selectedBranchLocation' => $selectedBranchLocation,
+            'outletBranchId' => $user->scopingBranch()?->id,
             'search' => $search,
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'branchLocations' => BranchLocation::groupedByBranch(),

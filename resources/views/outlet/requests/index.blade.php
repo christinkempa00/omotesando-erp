@@ -30,7 +30,8 @@
                 </div>
             @endif
 
-            <x-filter-bar :action="route('outlet.requests.index')" :search-value="$search" search-placeholder="Cari nomor/pemohon/deskripsi..." :reset-url="route('outlet.requests.index')">
+            <x-filter-bar :action="route('outlet.requests.index')" :search-value="$search" search-placeholder="Cari nomor/pemohon/deskripsi..." :reset-url="route('outlet.requests.index', ['reset' => 1])">
+                <x-branch-filter :branch-locations="$branchLocations" :fixed-branch-id="$outletBranchId" :selected-branch-location="$selectedBranchLocation" />
                 <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
             </x-filter-bar>
 

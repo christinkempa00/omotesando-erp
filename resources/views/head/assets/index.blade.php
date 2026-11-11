@@ -9,16 +9,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             {{-- Filter --}}
-            <x-filter-bar :action="route('head.assets.index')" :search-value="$search" search-placeholder="Cari nama/kode/serial number..." :reset-url="route('head.assets.index')">
-                <div>
-                    <label class="block text-xs font-medium text-ink-muted mb-1">Outlet</label>
-                    <select name="branch_id" class="w-full rounded-md border-hairline text-sm shadow-sm focus:border-action focus:ring-action">
-                        <option value="">Semua Outlet</option>
-                        @foreach ($branches as $branch)
-                            <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+            <x-filter-bar :action="route('head.assets.index')" :search-value="$search" search-placeholder="Cari nama/kode/serial number..." :reset-url="route('head.assets.index', ['reset' => 1])">
+                <x-branch-filter :branches="$branches" :branch-locations="$branchLocations" :selected-branch="$selectedBranch" :selected-branch-location="$selectedBranchLocation" />
                 <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
             </x-filter-bar>
 
