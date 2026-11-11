@@ -23,5 +23,14 @@ class BranchLocationSeeder extends Seeder
                 ['is_active' => true, 'sort_order' => 1]
             );
         }
+
+        $ironiku = Branch::where('name', 'Ironiku')->first();
+
+        if ($ironiku) {
+            BranchLocation::firstOrCreate(
+                ['branch_id' => $ironiku->id, 'name' => 'Event'],
+                ['is_active' => true, 'sort_order' => 0]
+            );
+        }
     }
 }
