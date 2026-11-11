@@ -9,6 +9,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Alpine: sembunyikan elemen ber-x-cloak sampai Alpine selesai init
+   (mencegah kedip, mis. tampilan Kartu sebelum pindah ke Tabel). */
+[x-cloak] { display: none !important; }
+
 @layer components {
     /* Kartu "gold/glass" — dulu IT-module-only, sekarang dipakai global
        (Fase 1 restyle shell). Versi kaya (Fase 1, lanjutan) — acuan
