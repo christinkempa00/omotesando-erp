@@ -65,7 +65,9 @@
                 <x-filter-pills name="status" label="Kondisi" :options="$statusLabels" :selected="$selectedStatus" />
             </x-filter-bar>
 
-            <div class="card-flat overflow-hidden" x-data="{ view: 'card' }">
+            <div class="card-flat overflow-hidden"
+                 x-data="{ view: (() => { try { return localStorage.getItem('uniformStocksView') || 'card'; } catch (e) { return 'card'; } })() }"
+                 x-init="$watch('view', v => { try { localStorage.setItem('uniformStocksView', v); } catch (e) {} })">
                 <div class="px-6 py-4 border-b border-hairline flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <p class="text-xs text-ink-muted">Per kombinasi outlet, jenis seragam, dan warna.</p>
                     <div class="inline-flex rounded-lg border border-hairline overflow-hidden shrink-0">
@@ -78,7 +80,7 @@
                     </div>
                 </div>
 
-                <div x-show="view==='card'" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div x-show="view==='card'" x-cloak class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     @forelse ($stockGroups as $group)
                         <div class="border rounded-[14px] p-3 cursor-pointer hover:shadow-sm transition {{ $group->is_low ? 'border-status-rejected-fg/30 bg-status-rejected-bg hover:border-status-rejected-fg/50' : 'border-hairline hover:bg-surface' }}"
                              onclick="window.location='{{ route('ga.uniforms.stocks.show-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}'">
@@ -201,49 +203,90 @@
                     <table class="min-w-full divide-y divide-hairline">
                         <thead class="border-b border-hairline">
                             <tr>
-                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tipe Seragam</th>
-                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Warna</th>
+                                <th class="px-4 py-3 text-center"></th>
+                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tipe Seragam &amp; Warna</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Outlet</th>
+                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Cabang</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Kondisi</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Ukuran</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Total</th>
                                 <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tidak Layak</th>
-                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-hairline">
                             @forelse ($stockGroups as $group)
+                                @php($groupParams = ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color])
                                 <tr class="hover:bg-[#FDFBF4] cursor-pointer"
-                                    onclick="window.location='{{ route('ga.uniforms.stocks.show-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}'">
-                                    <td class="px-4 py-3 text-sm text-center font-medium text-ink">{{ $group->type }}</td>
-                                    <td class="px-4 py-3 text-sm text-center text-ink-muted">{{ $group->color ?: '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-center text-ink-muted">{{ $group->branch->name }}</td>
-                                    <td class="px-4 py-3 text-center">
+                                    onclick="window.location='{{ route('ga.uniforms.stocks.show-group', $groupParams) }}'">
+                                    <td class="px-4 py-3">
+                                        @if ($group->photo_path)
+                                            <img src="{{ Storage::url($group->photo_path) }}" class="w-10 h-10 rounded object-cover">
+                                        @else
+                                            <div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-ink-muted text-xs">N/A</div>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <div class="font-medium text-ink">{{ $group->type }}</div>
+                                        <div class="text-xs text-ink-muted">{{ $group->color ?: '-' }}</div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-ink">{{ $group->branch->name }}</td>
+                                    <td class="px-4 py-3 text-sm text-ink">{{ $group->branchLocation?->name ?? '-' }}</td>
+                                    <td class="px-4 py-3">
                                         @if ($group->is_low)
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full border border-status-rejected-fg/30 bg-status-rejected-bg text-status-rejected-fg">Perlu Ganti</span>
                                         @else
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full border border-status-approved-fg/30 bg-status-approved-bg text-status-approved-fg">Bagus</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-center text-ink-muted">
+                                    <td class="px-4 py-3 text-sm text-ink-muted">
                                         @foreach ($group->items as $item)
-                                            <span class="whitespace-nowrap">{{ $item->size ?: '-' }}:{{ $item->available_stock }}</span>@if (!$loop->last)<span> </span>@endif
+                                            <span class="whitespace-nowrap {{ $item->isLowStock() ? 'text-orange-600 font-medium' : '' }}">{{ $item->size ?: '-' }}:{{ $item->available_stock }}</span>@if (!$loop->last)<span> </span>@endif
                                         @endforeach
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-center font-mono text-ink">{{ $group->total_available }}</td>
-                                    <td class="px-4 py-3 text-sm text-center font-mono {{ $group->total_unusable > 0 ? 'text-red-600' : 'text-ink' }}">{{ $group->total_unusable }}</td>
-                                    <td class="px-4 py-3 text-sm text-center" onclick="event.stopPropagation()">
+                                    <td class="px-4 py-3 text-sm font-mono text-ink">{{ $group->total_available }}</td>
+                                    <td class="px-4 py-3 text-sm font-mono {{ $group->total_unusable > 0 ? 'text-red-600' : 'text-ink' }}">{{ $group->total_unusable }}</td>
+                                    <td class="px-4 py-3 text-center text-sm" onclick="event.stopPropagation()">
                                         <div class="flex items-center justify-center gap-3">
-                                            <a href="{{ route('ga.uniforms.stocks.show-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
-                                               class="text-action hover:text-action-hover">Riwayat</a>
-                                            <a href="{{ route('ga.uniforms.stocks.create', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
-                                               class="text-action hover:text-action-hover">Tambah stok</a>
+                                            <a href="{{ route('ga.uniforms.stocks.show-group', $groupParams) }}" title="Riwayat" class="text-ink-muted hover:text-ink">
+                                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+                                                </svg>
+                                            </a>
+                                            @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
+                                                <a href="{{ route('ga.uniforms.stocks.create', $groupParams) }}" title="Tambah ukuran baru untuk grup ini" class="text-ink-muted hover:text-ink">
+                                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M12 5v14M5 12h14"/>
+                                                    </svg>
+                                                </a>
+                                                <a href="{{ route('ga.uniforms.stocks.edit-group', $groupParams) }}" title="Edit grup ini" class="text-action hover:text-action-hover">
+                                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7"/>
+                                                        <path d="M18.5 2.5a1.71 1.71 0 0 1 2 2L12 13l-4 1 1-4Z"/>
+                                                    </svg>
+                                                </a>
+                                                <form method="POST" action="{{ route('ga.uniforms.stocks.destroy-group') }}" class="inline"
+                                                      onsubmit="return confirm('Hapus seluruh grup {{ $group->type }} ({{ $group->branch->name }}{{ $group->color ? ' / '.$group->color : '' }})?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <input type="hidden" name="uniform_type" value="{{ $group->type }}">
+                                                    <input type="hidden" name="branch_id" value="{{ $group->branch->id }}">
+                                                    <input type="hidden" name="color" value="{{ $group->color }}">
+                                                    <button type="submit" title="Hapus grup ini" class="text-red-600 hover:text-red-800">
+                                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                                            <path d="M10 11v6M14 11v6"/>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada varian seragam.</td>
+                                    <td colspan="9" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada varian seragam.</td>
                                 </tr>
                             @endforelse
                         </tbody>

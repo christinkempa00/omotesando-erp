@@ -77,8 +77,14 @@ class UniformStockController extends Controller
             })
             ->values();
 
-        $stockPage = (int) $request->query('stock_page', 1);
-        $stockPerPage = 6;
+        // Ikuti dropdown "per halaman" di footer tabel (sebelumnya terkunci
+        // di 6 sehingga pilihan user diabaikan). Halaman di-clamp ke halaman
+        // terakhir supaya ganti per_page dari halaman jauh tidak berujung
+        // daftar kosong.
+        $stockPerPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 10;
+        $stockLastPage = max(1, (int) ceil($allGroups->count() / $stockPerPage));
+        $stockPage = min(max(1, (int) $request->query('stock_page', 1)), $stockLastPage);
         $stockGroups = new LengthAwarePaginator(
             $allGroups->forPage($stockPage, $stockPerPage)->values(),
             $allGroups->count(),

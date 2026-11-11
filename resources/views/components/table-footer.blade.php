@@ -9,7 +9,7 @@
         </div>
         <div class="flex items-center gap-3">
             <form method="GET" class="flex items-center gap-1.5">
-                @foreach (request()->except(['per_page', 'page']) as $key => $val)
+                @foreach (request()->except(['per_page', 'page', $paginator->getPageName()]) as $key => $val)
                     @if (is_array($val))
                         @foreach ($val as $v)
                             <input type="hidden" name="{{ $key }}[]" value="{{ $v }}">
