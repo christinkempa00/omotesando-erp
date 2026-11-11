@@ -26,12 +26,14 @@
                         if (! this.start || ! this.end) return '';
                         const [sh, sm] = this.start.split(':').map(Number);
                         const [eh, em] = this.end.split(':').map(Number);
-                        const mins = (eh * 60 + em) - (sh * 60 + sm);
-                        if (mins <= 0) return '';
+                        let mins = (eh * 60 + em) - (sh * 60 + sm);
+                        if (mins === 0) return '';
+                        // Jam selesai lebih kecil = selesai hari berikutnya (shift malam).
+                        const nextDay = mins < 0;
+                        if (nextDay) mins += 24 * 60;
                         const h = Math.floor(mins / 60), m = mins % 60;
-                        if (h > 0 && m > 0) return h + ' jam ' + m + ' menit';
-                        if (h > 0) return h + ' jam';
-                        return m + ' menit';
+                        const label = (h > 0 && m > 0) ? h + ' jam ' + m + ' menit' : (h > 0 ? h + ' jam' : m + ' menit');
+                        return nextDay ? label + ' (selesai hari berikutnya)' : label;
                     }
                  }" class="contents">
                 <div>
