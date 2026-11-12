@@ -131,10 +131,10 @@
             @if ($record->status === \App\Models\GA\UniformRecord::STATUS_RETURNED)
                 <div class="bg-green-50 border border-green-200 shadow-sm rounded-lg p-6">
                     <h3 class="font-medium text-green-800 mb-1">Sudah Dikembalikan</h3>
-                    <p class="text-sm text-green-700">
-                        {{ optional($record->return_date)->format('d M Y') }} —
-                        kondisi: {{ $conditionLabels[$record->return_condition] ?? $record->return_condition }}
-                    </p>
+                    <dl class="text-sm text-green-700 space-y-1">
+                        <div><dt class="inline">Tanggal Kembali:</dt> <dd class="inline font-medium text-green-800">{{ optional($record->return_date)->format('d M Y') ?? '-' }}</dd></div>
+                        <div><dt class="inline">Kondisi:</dt> <dd class="inline font-medium text-green-800">{{ $conditionLabels[$record->return_condition] ?? $record->return_condition ?? '-' }}</dd></div>
+                    </dl>
                     @if ($record->return_notes)
                         <p class="mt-2 text-sm text-green-800 whitespace-pre-line">{{ $record->return_notes }}</p>
                     @endif
