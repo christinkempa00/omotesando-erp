@@ -43,6 +43,7 @@
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Karyawan</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Seragam</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Outlet</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Cabang</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tgl Serah</th>
                             <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
                         </tr>
@@ -53,7 +54,8 @@
                                 <td class="px-4 py-3 text-sm font-mono text-ink-muted">{{ $record->record_code }}</td>
                                 <td class="px-4 py-3 text-sm font-medium text-ink">{{ $record->employee_name }}</td>
                                 <td class="px-4 py-3 text-sm text-ink-muted">{{ $record->summaryLabel() }}</td>
-                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $record->outletLabel() }}</td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $record->branch?->name ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $record->branchLocation?->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm text-ink-muted">{{ $record->issue_date->format('d M Y') }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ \App\Models\GA\UniformRecord::statusBadgeColor($record->status) }}">
@@ -63,7 +65,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada catatan serah-terima.</td>
+                                <td colspan="7" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada catatan serah-terima.</td>
                             </tr>
                         @endforelse
                     </tbody>
