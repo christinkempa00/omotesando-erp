@@ -162,6 +162,28 @@ class UniformRecord extends Model
     }
 
     /**
+     * Baris item utk tabel (kolom Seragam & Spesifikasi dipisah): tiap
+     * elemen ['type' => ..., 'spec' => ...]. Record lama (pre-itemized)
+     * menghasilkan satu baris dari field tunggalnya.
+     */
+    public function itemLines(): \Illuminate\Support\Collection
+    {
+        if ($this->isItemized()) {
+            $items = $this->relationLoaded('items') ? $this->items : $this->items()->get();
+
+            return $items->map(fn (UniformRecordItem $item) => [
+                'type' => $item->uniform_type ?: '-',
+                'spec' => $item->specificationLabel(),
+            ])->values();
+        }
+
+        return collect([[
+            'type' => $this->uniform_type ?: '-',
+            'spec' => collect([$this->size, $this->color])->filter()->implode(' / ') ?: '-',
+        ]]);
+    }
+
+    /**
      * Generate kode serah-terima: SRH-2026-0001, reset per tahun.
      *
      * Dihitung dari NOMOR TERBESAR yang sudah dipakai (bukan COUNT baris) —

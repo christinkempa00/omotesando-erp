@@ -34,6 +34,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karyawan</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Seragam</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Spesifikasi</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Serah</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                         </tr>
@@ -43,7 +44,20 @@
                             <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('outlet.uniforms.records.show', $record) }}'">
                                 <td class="px-4 py-3 text-sm font-mono text-gray-600">{{ $record->record_code }}</td>
                                 <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $record->employee_name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $record->summaryLabel() }}</td>
+                                @php($lines = $record->itemLines())
+                                <td class="px-4 py-3 text-sm text-gray-900">
+                                    @foreach ($lines->take(3) as $line)
+                                        <div class="whitespace-nowrap">{{ $line['type'] }}</div>
+                                    @endforeach
+                                    @if ($lines->count() > 3)
+                                        <div class="text-xs text-gray-500">+{{ $lines->count() - 3 }} lainnya</div>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">
+                                    @foreach ($lines->take(3) as $line)
+                                        <div class="whitespace-nowrap">{{ $line['spec'] }}</div>
+                                    @endforeach
+                                </td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $record->issue_date->format('d M Y') }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ \App\Models\GA\UniformRecord::statusBadgeColor($record->status) }}">
@@ -53,7 +67,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada catatan serah-terima.</td>
+                                <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada catatan serah-terima.</td>
                             </tr>
                         @endforelse
                     </tbody>
