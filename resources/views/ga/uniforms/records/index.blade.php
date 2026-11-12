@@ -43,6 +43,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karyawan</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Seragam</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Outlet</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabang</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Serah</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                         </tr>
@@ -53,7 +54,8 @@
                                 <td class="px-4 py-3 text-sm font-mono text-gray-600">{{ $record->record_code }}</td>
                                 <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $record->employee_name }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $record->summaryLabel() }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $record->outletLabel() }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ $record->branch?->name ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ $record->branchLocation?->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $record->issue_date->format('d M Y') }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ \App\Models\GA\UniformRecord::statusBadgeColor($record->status) }}">
@@ -63,7 +65,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada catatan serah-terima.</td>
+                                <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada catatan serah-terima.</td>
                             </tr>
                         @endforelse
                     </tbody>
